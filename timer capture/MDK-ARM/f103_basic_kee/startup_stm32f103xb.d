@@ -1,0 +1,1 @@
+f103_basic_kee\startup_stm32f103xb.o: startup_stm32f103xb.s

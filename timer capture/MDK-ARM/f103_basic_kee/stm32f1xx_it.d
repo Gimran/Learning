@@ -2,7 +2,7 @@ f103_basic_kee\stm32f1xx_it.o: ../Core/Src/stm32f1xx_it.c
 f103_basic_kee\stm32f1xx_it.o: ../Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f1xx.h
 f103_basic_kee\stm32f1xx_it.o: ../Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h
 f103_basic_kee\stm32f1xx_it.o: ../Drivers/CMSIS/Include/core_cm3.h
-f103_basic_kee\stm32f1xx_it.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+f103_basic_kee\stm32f1xx_it.o: h:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 f103_basic_kee\stm32f1xx_it.o: ../Drivers/CMSIS/Include/core_cmInstr.h
 f103_basic_kee\stm32f1xx_it.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
 f103_basic_kee\stm32f1xx_it.o: ../Drivers/CMSIS/Include/core_cmFunc.h

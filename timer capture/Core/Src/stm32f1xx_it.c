@@ -1,284 +1,81 @@
-/**
-  ******************************************************************************
-  * @file    stm32f1xx_it.c
-  * @brief   Interrupt Service Routines.
-  ******************************************************************************
-  *
-  * COPYRIGHT(c) 2018 STMicroelectronics
-  *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  *
-  ******************************************************************************
-  */
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx.h"
 #include "stm32f1xx_it.h"
 
-/* USER CODE BEGIN 0 */
-extern uint16_t duration;
-extern volatile uint8_t catcher, catcher2;
-uint32_t count4;
+extern volatile uint32_t duration, durationL;
+extern volatile uint8_t front, catcher2, preamble_flag;
+
 extern volatile long SysTickDelay;
-extern uint8_t detect_vect;
-extern uint16_t CycleCount;
-extern uint8_t Preamble_count;
+volatile long count4;
+extern volatile uint32_t preamble_count, LOW_count, HI_count;
+extern volatile uint8_t HCS_bit_counter;                // счетчик считанных бит данных
+extern volatile uint8_t RF_bufer[66];
+extern volatile uint8_t reciver_full;
+extern volatile uint32_t read_ID;
+volatile uint32_t preDBG[12], dataDBG[66];
 
-//volatile long ticc=0;
+extern volatile uint8_t level;
+extern volatile unsigned long len;
 
-
-/* USER CODE END 0 */
-
-
-
-
-/* External variables --------------------------------------------------------*/
-
-/******************************************************************************/
-/*            Cortex-M3 Processor Interruption and Exception Handlers         */ 
-/******************************************************************************/
-
-/**
-* @brief This function handles Non maskable interrupt.
-*/
-void NMI_Handler(void)
-{
-  /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
-
-  /* USER CODE END NonMaskableInt_IRQn 0 */
-  /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
-
-  /* USER CODE END NonMaskableInt_IRQn 1 */
-}
-
-/**
-* @brief This function handles Hard fault interrupt.
-*/
-void HardFault_Handler(void)
-{
-  /* USER CODE BEGIN HardFault_IRQn 0 */
-
-  /* USER CODE END HardFault_IRQn 0 */
-  while (1)
-  {
-    /* USER CODE BEGIN W1_HardFault_IRQn 0 */
-    /* USER CODE END W1_HardFault_IRQn 0 */
-  }
-  /* USER CODE BEGIN HardFault_IRQn 1 */
-
-  /* USER CODE END HardFault_IRQn 1 */
-}
-
-/**
-* @brief This function handles Memory management fault.
-*/
-void MemManage_Handler(void)
-{
-  /* USER CODE BEGIN MemoryManagement_IRQn 0 */
-
-  /* USER CODE END MemoryManagement_IRQn 0 */
-  while (1)
-  {
-    /* USER CODE BEGIN W1_MemoryManagement_IRQn 0 */
-    /* USER CODE END W1_MemoryManagement_IRQn 0 */
-  }
-  /* USER CODE BEGIN MemoryManagement_IRQn 1 */
-
-  /* USER CODE END MemoryManagement_IRQn 1 */
-}
-
-/**
-* @brief This function handles Prefetch fault, memory access fault.
-*/
-void BusFault_Handler(void)
-{
-  /* USER CODE BEGIN BusFault_IRQn 0 */
-
-  /* USER CODE END BusFault_IRQn 0 */
-  while (1)
-  {
-    /* USER CODE BEGIN W1_BusFault_IRQn 0 */
-    /* USER CODE END W1_BusFault_IRQn 0 */
-  }
-  /* USER CODE BEGIN BusFault_IRQn 1 */
-
-  /* USER CODE END BusFault_IRQn 1 */
-}
-
-/**
-* @brief This function handles Undefined instruction or illegal state.
-*/
-void UsageFault_Handler(void)
-{
-  /* USER CODE BEGIN UsageFault_IRQn 0 */
-
-  /* USER CODE END UsageFault_IRQn 0 */
-  while (1)
-  {
-    /* USER CODE BEGIN W1_UsageFault_IRQn 0 */
-    /* USER CODE END W1_UsageFault_IRQn 0 */
-  }
-  /* USER CODE BEGIN UsageFault_IRQn 1 */
-
-  /* USER CODE END UsageFault_IRQn 1 */
-}
-
-/**
-* @brief This function handles System service call via SWI instruction.
-*/
-void SVC_Handler(void)
-{
-  /* USER CODE BEGIN SVCall_IRQn 0 */
-
-  /* USER CODE END SVCall_IRQn 0 */
-  /* USER CODE BEGIN SVCall_IRQn 1 */
-
-  /* USER CODE END SVCall_IRQn 1 */
-}
-
-/**
-* @brief This function handles Debug monitor.
-*/
-void DebugMon_Handler(void)
-{
-  /* USER CODE BEGIN DebugMonitor_IRQn 0 */
-
-  /* USER CODE END DebugMonitor_IRQn 0 */
-  /* USER CODE BEGIN DebugMonitor_IRQn 1 */
-
-  /* USER CODE END DebugMonitor_IRQn 1 */
-}
-
-/**
-* @brief This function handles Pendable request for system service.
-*/
-void PendSV_Handler(void)
-{
-  /* USER CODE BEGIN PendSV_IRQn 0 */
-
-  /* USER CODE END PendSV_IRQn 0 */
-  /* USER CODE BEGIN PendSV_IRQn 1 */
-
-  /* USER CODE END PendSV_IRQn 1 */
-}
-
-/**
-* @brief This function handles System tick timer.
-*/
+void NMI_Handler(void){}
+void HardFault_Handler(void){while (1){}}
+void MemManage_Handler(void){ while (1){}}
+void BusFault_Handler(void){while (1){}}
+void UsageFault_Handler(void){while (1){}}
+void SVC_Handler(void){}
+void DebugMon_Handler(void){}
+void PendSV_Handler(void){}
+	
 void SysTick_Handler(void)
 {
-  /* USER CODE BEGIN SysTick_IRQn 0 */
 	SysTickDelay--;
-  /* USER CODE END SysTick_IRQn 0 */
-  
-  /* USER CODE BEGIN SysTick_IRQn 1 */
-
-  /* USER CODE END SysTick_IRQn 1 */
 }
 
-/******************************************************************************/
-/* STM32F1xx Peripheral Interrupt Handlers                                    */
-/* Add here the Interrupt Handlers for the used peripherals.                  */
-/* For the available peripheral interrupt handler names,                      */
-/* please refer to the startup file (startup_stm32f1xx.s).                    */
-/******************************************************************************/
 
-/**
-* @brief This function handles EXTI line[9:5] interrupts.
-*/
+
 void EXTI9_5_IRQHandler(void)
 {
-  /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-
-  /* USER CODE END EXTI9_5_IRQn 0 */
   if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_8) != RESET)
-  {
+	{
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_8);
-    /* USER CODE BEGIN LL_EXTI_LINE_8 */
     
-							if(catcher==1)
-							{
-							//	return;
-								LL_TIM_SetCounter(TIM4, 0);
-								LL_GPIO_ResetOutputPin(GPIOB, redLed_Pin);
-								detect_vect=1;
-								catcher=0;
-							}
-							
-							else
-							{
-								duration=LL_TIM_GetCounter(TIM4);
-								CycleCount=LL_TIM_GetCounter(TIM4);
-								//detect_vect=0;
-								LL_GPIO_SetOutputPin(GPIOB, redLed_Pin);
-								catcher=1;
-							}
-			
-											if (Preamble_count<12)
-													{
-														if (catcher == 0)
-														{
-															if (((CycleCount > 200) && (CycleCount < 400)) || Preamble_count == 0){} 
-															else
-															{
-																Preamble_count = 0;
-															}
-														} 
-														else
-														{
-															// конец импульса преамбулы
-															if((CycleCount > 400) && (CycleCount < 600))
-															{
-																// поймали импульс преамбулы
-																Preamble_count ++;
-																if(Preamble_count == 12)
-																{
-																	// словили преамбулу
-																	detect_vect = 0;
-																}
-															}
-															else
-															{
-																// поймали какую то фигню
-																Preamble_count = 0; // сбрасываем счетчик пойманных импульсов преамбулы
-															
-															}
-														}
+		if(level!=255) return;
+		
+    //front = 1 rising, 0 falling
+    if(front)
+    {
+      //обработка переднего фронта
+      //Enable Falling trigger line 8
+      LL_EXTI_DisableRisingTrig_0_31(LL_EXTI_LINE_8);
+      LL_EXTI_EnableFallingTrig_0_31(LL_EXTI_LINE_8);	
+      front=0;
+			level=0;
+      //durationL=LL_TIM_GetCounter(TIM4); //high level duration
+			len=LL_TIM_GetCounter(TIM4);
+      LL_TIM_SetCounter(TIM4, 0);
+      //LL_GPIO_ResetOutputPin(GPIOB, redLed_Pin);    
+    }						
+    else
+    {
+      //обработка заднего фронта
+      //Enable Rising trigger line 8
+      LL_EXTI_EnableRisingTrig_0_31(LL_EXTI_LINE_8);
+      LL_EXTI_DisableFallingTrig_0_31(LL_EXTI_LINE_8); 
+			front=1;
+			level=1;
+			len=TIM4->CNT;	//LL_TIM_GetCounter(TIM4);
+      duration=LL_TIM_GetCounter(TIM4);		 //high level duration
+			LL_TIM_SetCounter(TIM4, 0);      
+      //LL_GPIO_SetOutputPin(GPIOB, redLed_Pin);      
+    }		
 	}
-	
-
-		
-		
-		
-    /* USER CODE END LL_EXTI_LINE_8 */
-  }
-	
 	
 	
   if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_9) != RESET)
   {
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_9);
-    /* USER CODE BEGIN LL_EXTI_LINE_9 */
 		
+		/*
 		if(catcher2==0)
 		{
 			LL_TIM_SetCounter(TIM4, 0);
@@ -297,31 +94,13 @@ void EXTI9_5_IRQHandler(void)
 			//LL_GPIO_TogglePin(GPIOB, greenLed_Pin);
 			catcher2=0;
 		}
-		
-    /* USER CODE END LL_EXTI_LINE_9 */
+		*/
   }
-  /* USER CODE BEGIN EXTI9_5_IRQn 1 */
-
-  /* USER CODE END EXTI9_5_IRQn 1 */
 }
 
 
 
-
-/**
-* @brief This function handles TIM4 global interrupt.
-*/
 void TIM4_IRQHandler(void)
 {
-  /* USER CODE BEGIN TIM4_IRQn 0 */
 	count4++;
-  /* USER CODE END TIM4_IRQn 0 */
-  /* USER CODE BEGIN TIM4_IRQn 1 */
-
-  /* USER CODE END TIM4_IRQn 1 */
 }
-
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

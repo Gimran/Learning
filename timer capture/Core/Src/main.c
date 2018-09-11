@@ -1,89 +1,54 @@
-
-/**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  ** This notice applies to any and all portions of this file
-  * that are not between comment pairs USER CODE BEGIN and
-  * USER CODE END. Other portions of this file, whether 
-  * inserted by the user or by software development tools
-  * are owned by their respective copyright owners.
-  *
-  * COPYRIGHT(c) 2018 STMicroelectronics
-  *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  *
-  ******************************************************************************
-  */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-/* USER CODE BEGIN Includes */
 
-/* USER CODE END Includes */
+
+
 
 /* Private variables ---------------------------------------------------------*/
 	long timer_tic=0;
 	long BtnPeriod=0;
-	volatile uint8_t catcher=0, catcher2=0;	//0-rising, 1-falling edge
-	uint16_t duration;
+	volatile uint8_t front=0, catcher2=0, preamble_flag=0;	//0-rising, 1-falling edge
+	volatile uint32_t duration, durationL;
 	volatile long SysTickDelay=0;
 	
-	uint8_t Preamble_count=0, button_code;
-	uint8_t RF_bufer[66];
+	volatile uint32_t preamble_count=0,HI_count, LOW_count;
+	volatile uint8_t RF_bufer[66];
 	uint16_t his_ICR1, new_ICR1, CycleCount;
 	volatile uint8_t reciver_full;
-	uint8_t HCS_bit_counter;                // счетчик считанных бит данных
-	uint32_t read_ID;
+	uint8_t volatile HCS_bit_counter;                // счетчик считанных бит данных
+	volatile uint32_t read_ID, button_code;
 	uint8_t detect_vect=0;
 	volatile uint8_t state;
+	uint8_t debug[8]={0};
 
+volatile uint8_t level=255;
+volatile unsigned long last, len;
+uint8_t p_level;
+unsigned long p_len, p_len_prev;
+	
 
 	
-/* USER CODE BEGIN PV */
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE END PV */
-
 /* Private function prototypes -----------------------------------------------*/
 static void LL_Init(void);
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM4_Init(void);
 
-/* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 void Delay( unsigned int Val);
 
+
 	
-/* USER CODE END PFP */
-
-/* USER CODE BEGIN 0 */
-
 #define GREEN_ON LL_GPIO_ResetOutputPin(GPIOB, greenLed_Pin);
 #define GREEN_OFF LL_GPIO_SetOutputPin(GPIOB, greenLed_Pin);
-#define HIGH_interupt 0
+#define OUT_ON LL_GPIO_SetOutputPin(out1_GPIO_Port, out1_Pin|out2_Pin);
+#define OUT_OFF LL_GPIO_ResetOutputPin(out1_GPIO_Port, out1_Pin|out2_Pin);
+	
+#define KL_MIN_PRE_COUNT 4
+#define KL_MAX_TE 500
+#define KL_MIN_TE 300
+#define KL_MAX_BITS 66
 
 void Delay( unsigned int Val)  
 {  
@@ -91,117 +56,178 @@ void Delay( unsigned int Val)
   while (SysTickDelay != 0); 
 } 
 
-/* USER CODE END 0 */
 
-/**
-  * @brief  The application entry point.
-  *
-  * @retval None
-  */
+struct
+{
+  uint8_t state;
+  unsigned long TE;
+  uint8_t pre_count, data[9], dat_bit;
+} keeloq;
+
+
+void setbit(uint8_t *data, uint8_t n)
+{
+  data[n/8]|=1<<(n%8);
+}
+
+void process_keeloq()
+{
+  switch(keeloq.state)
+  {
+    case 0:
+      if(p_level) break;
+      keeloq.state=1;
+      keeloq.pre_count=0;
+      break;
+
+    case 1: //pre+hdr
+      if(p_len>=KL_MIN_TE && p_len<=KL_MAX_TE) keeloq.pre_count++;
+      else if(!p_level && p_len>=KL_MIN_TE*10 && p_len<=KL_MAX_TE*10 && keeloq.pre_count>=KL_MIN_PRE_COUNT)
+      {
+        keeloq.TE=p_len/10;
+        keeloq.state=2;
+        keeloq.dat_bit=0;
+        keeloq.data[0]=0x00;
+        keeloq.data[1]=0x00;
+        keeloq.data[2]=0x00;
+        keeloq.data[3]=0x00;
+        keeloq.data[4]=0x00;
+        keeloq.data[5]=0x00;
+        keeloq.data[6]=0x00;
+        keeloq.data[7]=0x00;
+				keeloq.data[8]=0x00;
+				
+				for(uint8_t i=0; i<66; i++)
+				{
+					RF_bufer[i]=0;
+				}
+      }
+        else
+      {
+        keeloq.state=0;
+        break;
+      }
+      break;
+
+    case 2: //dat
+      if(!p_level) break;
+
+      if(p_len<keeloq.TE/2 || p_len>keeloq.TE*3)
+      {
+        keeloq.state=0;
+        break;
+      }
+
+      if(p_len<=keeloq.TE+keeloq.TE/2) 
+			{
+				setbit(keeloq.data, keeloq.dat_bit);
+				RF_bufer[keeloq.dat_bit]=1;
+			}
+      if(++keeloq.dat_bit==KL_MAX_BITS) keeloq.state=100;
+      break;
+  }
+}
+
+void dump_hex(uint8_t *buf, uint8_t bits)
+{
+  uint8_t a;
+  
+  for(a=0; a<(bits+7)/8; a++)
+  {
+    if(buf[a]<=0x0f) {}
+  }
+}
+
+
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
-	
-  /* USER CODE END 1 */
-
-  /* MCU Configuration----------------------------------------------------------*/
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   LL_Init();
-
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
   SystemClock_Config();
-
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 	LL_TIM_DisableIT_TRIG(TIM4);
 	LL_TIM_EnableCounter(TIM4);
 	LL_SYSTICK_EnableIT();
-
-	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
-	Delay(100);
-	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
-	Delay(100);
-	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
-	Delay(100);
-	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
-	Delay(100);
-	catcher=LL_GPIO_IsInputPinSet(GPIOB, rfData_Pin);
 	
-  /* USER CODE END 2 */
+	LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_9);
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
+	Delay(100);
+	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
+	Delay(100);
+	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
+	Delay(100);
+	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
+	Delay(100);
+
+
+
   while (1)
   {
-		
-		state=LL_GPIO_IsInputPinSet(GPIOB, Btn_Pin);
-		
-		
-	/*
-		if(duration>1000&&duration<1200)
-	{
-		GREEN_ON;
-		Delay(500);
-	} else 
-	{
-		GREEN_OFF;
-		Delay(500);
-	}
-		*/
-		
-		/*
-		
-		if (Preamble_count<8)
-	{
-		if (detect_vect == 1)
-		{
-			if (((CycleCount > 500) && (CycleCount < 1200)) || Preamble_count == 0){} 
-			else
-			{
-				Preamble_count = 0;
-
-			}
-		} 
-		else
-		{
-			// конец импульса преамбулы
-			if((CycleCount > 500) && (CycleCount < 1200))
-			{
-				// поймали импульс преамбулы
-				Preamble_count ++;
-				if(Preamble_count == 8)
-				{
-					// словили преамбулу
-					HCS_bit_counter = 0;
-					GREEN_ON;
-				}
-			}
-			else
-			{
-				// поймали какую то фигню
-				Preamble_count = 0; // сбрасываем счетчик пойманных импульсов преамбулы
-			
-			}
-		}
-	}
-*/
-  /* USER CODE END WHILE */
-  /* USER CODE BEGIN 3 */
-
+		if(level!=255)
+  {
+    LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_8);
+    p_level=level;
+    p_len=len;
+    len=0;
+    level=255;
+    LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_8);
+    
+    process_keeloq();
+    
+    p_len_prev=p_len;
   }
-  /* USER CODE END 3 */
+  
+  if(keeloq.state==100)
+  {
+    //Serial.print("KEELOQ: ");
+    dump_hex(keeloq.data, 64);
+		button_code=keeloq.data[7]>>4;
+		read_ID|=keeloq.data[6]<<16;
+		read_ID|=keeloq.data[5]<<8;
+		read_ID|=keeloq.data[4];
+    keeloq.state=0;
+		if(read_ID==0xa40550)
+		{
+			//LL_GPIO_ResetOutputPin(GPIOB, greenLed_Pin);
+			GREEN_ON
+			OUT_ON
+			Delay(500);
+			GREEN_OFF
+			OUT_OFF
 
+		}
+    //Serial.println("");
+	}
+
+
+	//state=LL_GPIO_IsInputPinSet(GPIOB, Btn_Pin);
+		/*
+	if(reciver_full)
+		{
+			LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_8);
+			for(uint8_t i=0;i<8; i++)
+			{
+				debug[i]=0;
+				
+			}
+			debug[0]=RF_bufer[2];
+			debug[1]=RF_bufer[3];
+			debug[2]=RF_bufer[4];
+			debug[3]=RF_bufer[5];
+			reciver_full=0;
+			for(uint8_t i=0; i<66; i++)
+			{
+				RF_bufer[i]=0;
+			}
+			Delay(400);
+			LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_8);
+
+		  
+		}
+		*/
+  }
 }
 
 static void LL_Init(void)
@@ -304,7 +330,7 @@ static void MX_TIM4_Init(void)
 
   TIM_InitStruct.Prescaler = 63;
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
-  TIM_InitStruct.Autoreload = 10000;
+  TIM_InitStruct.Autoreload = 30000;
   TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
   LL_TIM_Init(TIM4, &TIM_InitStruct);
 
@@ -371,7 +397,7 @@ static void MX_GPIO_Init(void)
   EXTI_InitStruct.Line_0_31 = LL_EXTI_LINE_9;
   EXTI_InitStruct.LineCommand = ENABLE;
   EXTI_InitStruct.Mode = LL_EXTI_MODE_IT;
-  EXTI_InitStruct.Trigger = LL_EXTI_TRIGGER_RISING_FALLING;
+  EXTI_InitStruct.Trigger = LL_EXTI_TRIGGER_RISING;
   LL_EXTI_Init(&EXTI_InitStruct);
 
   /**/

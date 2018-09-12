@@ -21,6 +21,7 @@
 	uint8_t detect_vect=0;
 	volatile uint8_t state;
 	uint8_t debug[8]={0};
+  uint32_t last_ID;
 
 volatile uint8_t level=255;
 volatile unsigned long last, len;
@@ -36,19 +37,19 @@ static void MX_GPIO_Init(void);
 static void MX_TIM4_Init(void);
 
 /* Private function prototypes -----------------------------------------------*/
-void Delay( unsigned int Val);
+	
+typedef	struct
+{
+char Parameter1;		// 1 byte
+uint8_t Parameter2;		// 1 byte
+uint16_t Parameter3;	// 2 byte
+uint32_t Parameter4;	// 4 byte
+
+                      // 8 byte = 2  32-bits words.  It's - OK
+                      // !!! Full size (bytes) must be a multiple of 4 !!!
+} tpSettings;
 
 
-	
-#define GREEN_ON LL_GPIO_ResetOutputPin(GPIOB, greenLed_Pin);
-#define GREEN_OFF LL_GPIO_SetOutputPin(GPIOB, greenLed_Pin);
-#define OUT_ON LL_GPIO_SetOutputPin(out1_GPIO_Port, out1_Pin|out2_Pin);
-#define OUT_OFF LL_GPIO_ResetOutputPin(out1_GPIO_Port, out1_Pin|out2_Pin);
-	
-#define KL_MIN_PRE_COUNT 4
-#define KL_MAX_TE 500
-#define KL_MIN_TE 300
-#define KL_MAX_BITS 66
 
 void Delay( unsigned int Val)  
 {  
@@ -154,12 +155,16 @@ int main(void)
 
 	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
 	Delay(100);
+  LL_mDelay(1000);
 	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
 	Delay(100);
 	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
 	Delay(100);
 	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
 	Delay(100);
+ // LL_GPIO_ResetOutputPin(GPIOB, redLed_Pin|greenLed_Pin);
+
+  
 
 
 
@@ -182,22 +187,27 @@ int main(void)
   if(keeloq.state==100)
   {
     //Serial.print("KEELOQ: ");
-    dump_hex(keeloq.data, 64);
+    //dump_hex(keeloq.data, 64);
 		button_code=keeloq.data[7]>>4;
 		read_ID|=keeloq.data[6]<<16;
 		read_ID|=keeloq.data[5]<<8;
 		read_ID|=keeloq.data[4];
     keeloq.state=0;
-		if(read_ID==0xa40550)
+		if(read_ID == FANTOM_ID)
 		{
 			//LL_GPIO_ResetOutputPin(GPIOB, greenLed_Pin);
 			GREEN_ON
-			OUT_ON
+      RED_ON
+      LL_GPIO_TogglePin(GPIOB, redLed_Pin);
+      OUT_ON
 			Delay(500);
 			GREEN_OFF
+      RED_OFF
+      LL_GPIO_TogglePin(GPIOB, redLed_Pin);
 			OUT_OFF
-
 		}
+    last_ID=read_ID;
+    read_ID=0;
     //Serial.println("");
 	}
 
@@ -379,6 +389,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
   LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*channel pin setup*/
+  GPIO_InitStruct.Pin = ch1|ch2|ch3|ch4;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;  
+  LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
 
   /**/
   LL_GPIO_AF_SetEXTISource(LL_GPIO_AF_EXTI_PORTB, LL_GPIO_AF_EXTI_LINE8);

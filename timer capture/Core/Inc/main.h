@@ -56,6 +56,30 @@
 
 /* USER CODE BEGIN Includes */
 
+void setbit(uint8_t *data, uint8_t n);
+void Delay( unsigned int Val);
+void setbit(uint8_t *data, uint8_t n);
+void dump_hex(uint8_t *buf, uint8_t bits);
+void process_keeloq(void);
+
+
+#define GREEN_ON LL_GPIO_ResetOutputPin(GPIOB, greenLed_Pin);
+#define GREEN_OFF LL_GPIO_SetOutputPin(GPIOB, greenLed_Pin);
+#define RED_ON LL_GPIO_SetOutputPin(GPIOB, redLed_Pin);
+#define RED_OFF LL_GPIO_ResetOutputPin(GPIOB, redLed_Pin);
+#define OUT_ON LL_GPIO_SetOutputPin(out1_GPIO_Port, out1_Pin|out2_Pin);
+#define OUT_OFF LL_GPIO_ResetOutputPin(out1_GPIO_Port, out1_Pin|out2_Pin);
+
+#define FANTOM_ID 0x26b41b    //0xa40550
+
+	
+#define KL_MIN_PRE_COUNT 4
+#define KL_MAX_TE 500
+#define KL_MIN_TE 300
+#define KL_MAX_BITS 66
+
+
+
 /* USER CODE END Includes */
 
 /* Private define ------------------------------------------------------------*/
@@ -74,6 +98,11 @@
 #define Btn_Pin LL_GPIO_PIN_9
 #define Btn_GPIO_Port GPIOB
 #define Btn_EXTI_IRQn EXTI9_5_IRQn
+
+#define ch1 LL_GPIO_PIN_3
+#define ch2 LL_GPIO_PIN_4
+#define ch3 LL_GPIO_PIN_5
+#define ch4 LL_GPIO_PIN_6
 #ifndef NVIC_PRIORITYGROUP_0
 #define NVIC_PRIORITYGROUP_0         ((uint32_t)0x00000007) /*!< 0 bit  for pre-emption priority,
                                                                  4 bits for subpriority */

@@ -1,4 +1,4 @@
-﻿# Learning test project
+﻿# RF project
 
 - [Learning test project](#learning-test-project)
     - [Список Ссылок на информацию о протоколе KeeLoq](#%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA-%D1%81%D1%81%D1%8B%D0%BB%D0%BE%D0%BA-%D0%BD%D0%B0-%D0%B8%D0%BD%D1%84%D0%BE%D1%80%D0%BC%D0%B0%D1%86%D0%B8%D1%8E-%D0%BE-%D0%BF%D1%80%D0%BE%D1%82%D0%BE%D0%BA%D0%BE%D0%BB%D0%B5-keeloq)
@@ -16,7 +16,17 @@
 ## Список Ссылок на информацию о протоколе KeeLoq
 
 - [Описание протокола на форуме](http://phreakerclub.com/forum/showthread.php?t=1094)
-- 
+
+
+## Фильтры
+
+- [модуляция в Proteus](https://utmiit-201.jimdo.com/модуляция/)
+- [расчет фильтров от TI](http://www.ti.com/design-tools/signal-chain-design/webench-filters.html)
+
+## Recivers
+
+- [RR3-433](https://spb.terraelectronica.ru/product/163566) ([PDF](https://spb.terraelectronica.ru/pdf/show?pdf_file=%252Fds%252Fpdf%252FR%252FRR3_8.pdf))
+- [AM detector схемы](https://www.edn.com/design/analog/4442773/AM-detector-more-sensitive-than-simple-diode)
 
 ## STM32 Flash info
 - [общее описание на CMSIS easystm32.ru](http://easystm32.ru/for-beginners/38-flash-stm32)

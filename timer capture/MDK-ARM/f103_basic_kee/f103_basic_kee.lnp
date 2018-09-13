@@ -2,6 +2,8 @@
 "f103_basic_kee\startup_stm32f103xb.o"
 "f103_basic_kee\main.o"
 "f103_basic_kee\stm32f1xx_it.o"
+"f103_basic_kee\flash.o"
+"f103_basic_kee\keeloq.o"
 "f103_basic_kee\stm32f1xx_ll_gpio.o"
 "f103_basic_kee\stm32f1xx_ll_pwr.o"
 "f103_basic_kee\stm32f1xx_ll_exti.o"
@@ -11,6 +13,6 @@
 "f103_basic_kee\stm32f1xx_ll_utils.o"
 "f103_basic_kee\system_stm32f1xx.o"
 --library_type=microlib --strict --scatter "f103_basic_kee\f103_basic_kee.sct"
---summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
 --list "f103_basic_kee.map" -o f103_basic_kee\f103_basic_kee.axf

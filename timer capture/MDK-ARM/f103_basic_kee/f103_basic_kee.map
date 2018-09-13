@@ -1,4 +1,4 @@
-Component: ARM Compiler 5.06 update 5 (build 528) Tool: armlink [4d35e2]
+Component: ARM Compiler 5.06 update 4 (build 422) Tool: armlink [4d35d2]
 
 ==============================================================================
 
@@ -548,94 +548,94 @@ Memory Map of the image
 
   Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00000fdc, Max: 0x00010000, ABSOLUTE)
 
-    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00000f78, Max: 0x00010000, ABSOLUTE)
+    Execution Region ER_IROM1 (Base: 0x08000000, Size: 0x00000f78, Max: 0x00010000, ABSOLUTE)
 
-    Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x08000000   0x08000000   0x000000ec   Data   RO            3    RESET               startup_stm32f103xb.o
-    0x080000ec   0x080000ec   0x00000000   Code   RO          996  * .ARM.Collect$$$$00000000  mc_w.l(entry.o)
-    0x080000ec   0x080000ec   0x00000004   Code   RO          999    .ARM.Collect$$$$00000001  mc_w.l(entry2.o)
-    0x080000f0   0x080000f0   0x00000004   Code   RO         1002    .ARM.Collect$$$$00000004  mc_w.l(entry5.o)
-    0x080000f4   0x080000f4   0x00000000   Code   RO         1004    .ARM.Collect$$$$00000008  mc_w.l(entry7b.o)
-    0x080000f4   0x080000f4   0x00000000   Code   RO         1006    .ARM.Collect$$$$0000000A  mc_w.l(entry8b.o)
-    0x080000f4   0x080000f4   0x00000008   Code   RO         1007    .ARM.Collect$$$$0000000B  mc_w.l(entry9a.o)
-    0x080000fc   0x080000fc   0x00000000   Code   RO         1009    .ARM.Collect$$$$0000000D  mc_w.l(entry10a.o)
-    0x080000fc   0x080000fc   0x00000000   Code   RO         1011    .ARM.Collect$$$$0000000F  mc_w.l(entry11a.o)
-    0x080000fc   0x080000fc   0x00000004   Code   RO         1000    .ARM.Collect$$$$00002712  mc_w.l(entry2.o)
-    0x08000100   0x08000100   0x00000024   Code   RO            4    .text               startup_stm32f103xb.o
-    0x08000124   0x08000124   0x00000024   Code   RO         1013    .text               mc_w.l(init.o)
-    0x08000148   0x08000148   0x00000004   Code   RO          196    i.BusFault_Handler  stm32f1xx_it.o
-    0x0800014c   0x0800014c   0x00000002   Code   RO          197    i.DebugMon_Handler  stm32f1xx_it.o
-    0x0800014e   0x0800014e   0x00000002   PAD
-    0x08000150   0x08000150   0x00000014   Code   RO           13    i.Delay             main.o
-    0x08000164   0x08000164   0x000000d4   Code   RO          198    i.EXTI9_5_IRQHandler  stm32f1xx_it.o
-    0x08000238   0x08000238   0x00000004   Code   RO          199    i.HardFault_Handler  stm32f1xx_it.o
-    0x0800023c   0x0800023c   0x0000001c   Code   RO           14    i.LL_APB1_GRP1_EnableClock  main.o
-    0x08000258   0x08000258   0x0000001c   Code   RO           15    i.LL_APB2_GRP1_EnableClock  main.o
-    0x08000274   0x08000274   0x0000000c   Code   RO          200    i.LL_EXTI_ClearFlag_0_31  stm32f1xx_it.o
-    0x08000280   0x08000280   0x00000010   Code   RO          520    i.LL_EXTI_DisableEvent_0_31  stm32f1xx_ll_exti.o
-    0x08000290   0x08000290   0x00000010   Code   RO          521    i.LL_EXTI_DisableIT_0_31  stm32f1xx_ll_exti.o
-    0x080002a0   0x080002a0   0x00000010   Code   RO          522    i.LL_EXTI_EnableEvent_0_31  stm32f1xx_ll_exti.o
-    0x080002b0   0x080002b0   0x00000010   Code   RO          523    i.LL_EXTI_EnableFallingTrig_0_31  stm32f1xx_ll_exti.o
-    0x080002c0   0x080002c0   0x00000010   Code   RO          524    i.LL_EXTI_EnableIT_0_31  stm32f1xx_ll_exti.o
-    0x080002d0   0x080002d0   0x00000010   Code   RO          525    i.LL_EXTI_EnableRisingTrig_0_31  stm32f1xx_ll_exti.o
-    0x080002e0   0x080002e0   0x000000bc   Code   RO          526    i.LL_EXTI_Init      stm32f1xx_ll_exti.o
-    0x0800039c   0x0800039c   0x00000018   Code   RO          201    i.LL_EXTI_IsActiveFlag_0_31  stm32f1xx_it.o
-    0x080003b4   0x080003b4   0x0000002c   Code   RO           16    i.LL_GPIO_AF_SetEXTISource  main.o
-    0x080003e0   0x080003e0   0x00000122   Code   RO          443    i.LL_GPIO_Init      stm32f1xx_ll_gpio.o
-    0x08000502   0x08000502   0x00000008   Code   RO           17    i.LL_GPIO_ResetOutputPin  main.o
-    0x0800050a   0x0800050a   0x00000008   Code   RO           18    i.LL_GPIO_SetOutputPin  main.o
-    0x08000512   0x08000512   0x0000002c   Code   RO           19    i.LL_GPIO_SetPinMode  main.o
-    0x0800053e   0x0800053e   0x0000000c   Code   RO           20    i.LL_GPIO_TogglePin  main.o
-    0x0800054a   0x0800054a   0x00000002   PAD
-    0x0800054c   0x0800054c   0x0000010c   Code   RO           21    i.LL_Init           main.o
-    0x08000658   0x08000658   0x0000001c   Code   RO          868    i.LL_Init1msTick    stm32f1xx_ll_utils.o
-    0x08000674   0x08000674   0x0000000c   Code   RO          875    i.LL_SetSystemCoreClock  stm32f1xx_ll_utils.o
-    0x08000680   0x08000680   0x00000084   Code   RO          603    i.LL_TIM_Init       stm32f1xx_ll_tim.o
-    0x08000704   0x08000704   0x00000004   Code   RO          202    i.LL_TIM_SetCounter  stm32f1xx_it.o
-    0x08000708   0x08000708   0x00000028   Code   RO          876    i.LL_mDelay         stm32f1xx_ll_utils.o
-    0x08000730   0x08000730   0x00000128   Code   RO           22    i.MX_GPIO_Init      main.o
-    0x08000858   0x08000858   0x00000090   Code   RO           23    i.MX_TIM4_Init      main.o
-    0x080008e8   0x080008e8   0x00000004   Code   RO          203    i.MemManage_Handler  stm32f1xx_it.o
-    0x080008ec   0x080008ec   0x00000002   Code   RO          204    i.NMI_Handler       stm32f1xx_it.o
-    0x080008ee   0x080008ee   0x00000016   Code   RO           24    i.NVIC_EnableIRQ    main.o
-    0x08000904   0x08000904   0x00000040   Code   RO           25    i.NVIC_EncodePriority  main.o
-    0x08000944   0x08000944   0x00000010   Code   RO           26    i.NVIC_GetPriorityGrouping  main.o
-    0x08000954   0x08000954   0x00000028   Code   RO           27    i.NVIC_SetPriority  main.o
-    0x0800097c   0x0800097c   0x00000002   Code   RO          205    i.PendSV_Handler    stm32f1xx_it.o
-    0x0800097e   0x0800097e   0x00000002   Code   RO          206    i.SVC_Handler       stm32f1xx_it.o
-    0x08000980   0x08000980   0x00000010   Code   RO          207    i.SysTick_Handler   stm32f1xx_it.o
-    0x08000990   0x08000990   0x00000158   Code   RO           28    i.SystemClock_Config  main.o
-    0x08000ae8   0x08000ae8   0x00000058   Code   RO          963    i.SystemInit        system_stm32f1xx.o
-    0x08000b40   0x08000b40   0x00000010   Code   RO          208    i.TIM4_IRQHandler   stm32f1xx_it.o
-    0x08000b50   0x08000b50   0x00000004   Code   RO          209    i.UsageFault_Handler  stm32f1xx_it.o
-    0x08000b54   0x08000b54   0x00000004   Code   RO           29    i._Error_Handler    main.o
-    0x08000b58   0x08000b58   0x0000000e   Code   RO         1017    i.__scatterload_copy  mc_w.l(handlers.o)
-    0x08000b66   0x08000b66   0x00000002   Code   RO         1018    i.__scatterload_null  mc_w.l(handlers.o)
-    0x08000b68   0x08000b68   0x0000000e   Code   RO         1019    i.__scatterload_zeroinit  mc_w.l(handlers.o)
-    0x08000b76   0x08000b76   0x00000002   PAD
-    0x08000b78   0x08000b78   0x00000014   Code   RO          335    i.flash_lock        flash.o
-    0x08000b8c   0x08000b8c   0x00000014   Code   RO          336    i.flash_ready       flash.o
-    0x08000ba0   0x08000ba0   0x00000018   Code   RO          337    i.flash_unlock      flash.o
-    0x08000bb8   0x08000bb8   0x00000048   Code   RO          338    i.flash_write       flash.o
-    0x08000c00   0x08000c00   0x00000068   Code   RO          388    i.level_check       keeloq.o
-    0x08000c68   0x08000c68   0x0000018c   Code   RO           30    i.main              main.o
-    0x08000df4   0x08000df4   0x00000134   Code   RO          389    i.process_keeloq    keeloq.o
-    0x08000f28   0x08000f28   0x00000030   Code   RO          390    i.setbit            keeloq.o
-    0x08000f58   0x08000f58   0x00000020   Data   RO         1015    Region$$Table       anon$$obj.o
+    0x08000000   0x000000ec   Data   RO            3    RESET               startup_stm32f103xb.o
+    0x080000ec   0x00000000   Code   RO          996  * .ARM.Collect$$$$00000000  mc_w.l(entry.o)
+    0x080000ec   0x00000004   Code   RO          999    .ARM.Collect$$$$00000001  mc_w.l(entry2.o)
+    0x080000f0   0x00000004   Code   RO         1002    .ARM.Collect$$$$00000004  mc_w.l(entry5.o)
+    0x080000f4   0x00000000   Code   RO         1004    .ARM.Collect$$$$00000008  mc_w.l(entry7b.o)
+    0x080000f4   0x00000000   Code   RO         1006    .ARM.Collect$$$$0000000A  mc_w.l(entry8b.o)
+    0x080000f4   0x00000008   Code   RO         1007    .ARM.Collect$$$$0000000B  mc_w.l(entry9a.o)
+    0x080000fc   0x00000000   Code   RO         1009    .ARM.Collect$$$$0000000D  mc_w.l(entry10a.o)
+    0x080000fc   0x00000000   Code   RO         1011    .ARM.Collect$$$$0000000F  mc_w.l(entry11a.o)
+    0x080000fc   0x00000004   Code   RO         1000    .ARM.Collect$$$$00002712  mc_w.l(entry2.o)
+    0x08000100   0x00000024   Code   RO            4    .text               startup_stm32f103xb.o
+    0x08000124   0x00000024   Code   RO         1013    .text               mc_w.l(init.o)
+    0x08000148   0x00000004   Code   RO          196    i.BusFault_Handler  stm32f1xx_it.o
+    0x0800014c   0x00000002   Code   RO          197    i.DebugMon_Handler  stm32f1xx_it.o
+    0x0800014e   0x00000002   PAD
+    0x08000150   0x00000014   Code   RO           13    i.Delay             main.o
+    0x08000164   0x000000d4   Code   RO          198    i.EXTI9_5_IRQHandler  stm32f1xx_it.o
+    0x08000238   0x00000004   Code   RO          199    i.HardFault_Handler  stm32f1xx_it.o
+    0x0800023c   0x0000001c   Code   RO           14    i.LL_APB1_GRP1_EnableClock  main.o
+    0x08000258   0x0000001c   Code   RO           15    i.LL_APB2_GRP1_EnableClock  main.o
+    0x08000274   0x0000000c   Code   RO          200    i.LL_EXTI_ClearFlag_0_31  stm32f1xx_it.o
+    0x08000280   0x00000010   Code   RO          520    i.LL_EXTI_DisableEvent_0_31  stm32f1xx_ll_exti.o
+    0x08000290   0x00000010   Code   RO          521    i.LL_EXTI_DisableIT_0_31  stm32f1xx_ll_exti.o
+    0x080002a0   0x00000010   Code   RO          522    i.LL_EXTI_EnableEvent_0_31  stm32f1xx_ll_exti.o
+    0x080002b0   0x00000010   Code   RO          523    i.LL_EXTI_EnableFallingTrig_0_31  stm32f1xx_ll_exti.o
+    0x080002c0   0x00000010   Code   RO          524    i.LL_EXTI_EnableIT_0_31  stm32f1xx_ll_exti.o
+    0x080002d0   0x00000010   Code   RO          525    i.LL_EXTI_EnableRisingTrig_0_31  stm32f1xx_ll_exti.o
+    0x080002e0   0x000000bc   Code   RO          526    i.LL_EXTI_Init      stm32f1xx_ll_exti.o
+    0x0800039c   0x00000018   Code   RO          201    i.LL_EXTI_IsActiveFlag_0_31  stm32f1xx_it.o
+    0x080003b4   0x0000002c   Code   RO           16    i.LL_GPIO_AF_SetEXTISource  main.o
+    0x080003e0   0x00000122   Code   RO          443    i.LL_GPIO_Init      stm32f1xx_ll_gpio.o
+    0x08000502   0x00000008   Code   RO           17    i.LL_GPIO_ResetOutputPin  main.o
+    0x0800050a   0x00000008   Code   RO           18    i.LL_GPIO_SetOutputPin  main.o
+    0x08000512   0x0000002c   Code   RO           19    i.LL_GPIO_SetPinMode  main.o
+    0x0800053e   0x0000000c   Code   RO           20    i.LL_GPIO_TogglePin  main.o
+    0x0800054a   0x00000002   PAD
+    0x0800054c   0x0000010c   Code   RO           21    i.LL_Init           main.o
+    0x08000658   0x0000001c   Code   RO          868    i.LL_Init1msTick    stm32f1xx_ll_utils.o
+    0x08000674   0x0000000c   Code   RO          875    i.LL_SetSystemCoreClock  stm32f1xx_ll_utils.o
+    0x08000680   0x00000084   Code   RO          603    i.LL_TIM_Init       stm32f1xx_ll_tim.o
+    0x08000704   0x00000004   Code   RO          202    i.LL_TIM_SetCounter  stm32f1xx_it.o
+    0x08000708   0x00000028   Code   RO          876    i.LL_mDelay         stm32f1xx_ll_utils.o
+    0x08000730   0x00000128   Code   RO           22    i.MX_GPIO_Init      main.o
+    0x08000858   0x00000090   Code   RO           23    i.MX_TIM4_Init      main.o
+    0x080008e8   0x00000004   Code   RO          203    i.MemManage_Handler  stm32f1xx_it.o
+    0x080008ec   0x00000002   Code   RO          204    i.NMI_Handler       stm32f1xx_it.o
+    0x080008ee   0x00000016   Code   RO           24    i.NVIC_EnableIRQ    main.o
+    0x08000904   0x00000040   Code   RO           25    i.NVIC_EncodePriority  main.o
+    0x08000944   0x00000010   Code   RO           26    i.NVIC_GetPriorityGrouping  main.o
+    0x08000954   0x00000028   Code   RO           27    i.NVIC_SetPriority  main.o
+    0x0800097c   0x00000002   Code   RO          205    i.PendSV_Handler    stm32f1xx_it.o
+    0x0800097e   0x00000002   Code   RO          206    i.SVC_Handler       stm32f1xx_it.o
+    0x08000980   0x00000010   Code   RO          207    i.SysTick_Handler   stm32f1xx_it.o
+    0x08000990   0x00000158   Code   RO           28    i.SystemClock_Config  main.o
+    0x08000ae8   0x00000058   Code   RO          963    i.SystemInit        system_stm32f1xx.o
+    0x08000b40   0x00000010   Code   RO          208    i.TIM4_IRQHandler   stm32f1xx_it.o
+    0x08000b50   0x00000004   Code   RO          209    i.UsageFault_Handler  stm32f1xx_it.o
+    0x08000b54   0x00000004   Code   RO           29    i._Error_Handler    main.o
+    0x08000b58   0x0000000e   Code   RO         1017    i.__scatterload_copy  mc_w.l(handlers.o)
+    0x08000b66   0x00000002   Code   RO         1018    i.__scatterload_null  mc_w.l(handlers.o)
+    0x08000b68   0x0000000e   Code   RO         1019    i.__scatterload_zeroinit  mc_w.l(handlers.o)
+    0x08000b76   0x00000002   PAD
+    0x08000b78   0x00000014   Code   RO          335    i.flash_lock        flash.o
+    0x08000b8c   0x00000014   Code   RO          336    i.flash_ready       flash.o
+    0x08000ba0   0x00000018   Code   RO          337    i.flash_unlock      flash.o
+    0x08000bb8   0x00000048   Code   RO          338    i.flash_write       flash.o
+    0x08000c00   0x00000068   Code   RO          388    i.level_check       keeloq.o
+    0x08000c68   0x0000018c   Code   RO           30    i.main              main.o
+    0x08000df4   0x00000134   Code   RO          389    i.process_keeloq    keeloq.o
+    0x08000f28   0x00000030   Code   RO          390    i.setbit            keeloq.o
+    0x08000f58   0x00000020   Data   RO         1015    Region$$Table       anon$$obj.o
 
 
-    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08000f78, Size: 0x000004c0, Max: 0x00005000, ABSOLUTE)
+    Execution Region RW_IRAM1 (Base: 0x20000000, Size: 0x000004c0, Max: 0x00005000, ABSOLUTE)
 
-    Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
+    Base Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20000000   0x08000f78   0x00000044   Data   RW           33    .data               main.o
-    0x20000044   0x08000fbc   0x00000004   Data   RW          212    .data               stm32f1xx_it.o
-    0x20000048   0x08000fc0   0x00000018   Data   RW          392    .data               keeloq.o
-    0x20000060   0x08000fd8   0x00000004   Data   RW          965    .data               system_stm32f1xx.o
-    0x20000064        -       0x00000058   Zero   RW           31    .bss                main.o
-    0x200000bc   0x08000fdc   0x00000004   PAD
-    0x200000c0        -       0x00000400   Zero   RW            1    STACK               startup_stm32f103xb.o
+    0x20000000   0x00000044   Data   RW           33    .data               main.o
+    0x20000044   0x00000004   Data   RW          212    .data               stm32f1xx_it.o
+    0x20000048   0x00000018   Data   RW          392    .data               keeloq.o
+    0x20000060   0x00000004   Data   RW          965    .data               system_stm32f1xx.o
+    0x20000064   0x00000058   Zero   RW           31    .bss                main.o
+    0x200000bc   0x00000004   PAD
+    0x200000c0   0x00000400   Zero   RW            1    STACK               startup_stm32f103xb.o
 
 
 ==============================================================================

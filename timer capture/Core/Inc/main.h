@@ -1,43 +1,3 @@
-/**
-  ******************************************************************************
-  * @file           : main.h
-  * @brief          : Header for main.c file.
-  *                   This file contains the common defines of the application.
-  ******************************************************************************
-  ** This notice applies to any and all portions of this file
-  * that are not between comment pairs USER CODE BEGIN and
-  * USER CODE END. Other portions of this file, whether 
-  * inserted by the user or by software development tools
-  * are owned by their respective copyright owners.
-  *
-  * COPYRIGHT(c) 2018 STMicroelectronics
-  *
-  * Redistribution and use in source and binary forms, with or without modification,
-  * are permitted provided that the following conditions are met:
-  *   1. Redistributions of source code must retain the above copyright notice,
-  *      this list of conditions and the following disclaimer.
-  *   2. Redistributions in binary form must reproduce the above copyright notice,
-  *      this list of conditions and the following disclaimer in the documentation
-  *      and/or other materials provided with the distribution.
-  *   3. Neither the name of STMicroelectronics nor the names of its contributors
-  *      may be used to endorse or promote products derived from this software
-  *      without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  *
-  ******************************************************************************
-  */
-
-/* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
@@ -54,7 +14,41 @@
 #include "stm32f1xx.h"
 #include "stm32f1xx_ll_gpio.h"
 
-/* USER CODE BEGIN Includes */
+#include "flash.h"
+#include "keeloq.h"
+
+
+static void LL_Init(void);
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_TIM4_Init(void);
+
+void Delay( unsigned int Val);
+
+struct keeloqStr
+{
+  uint8_t state;
+  unsigned long TE;
+  uint8_t pre_count, data[9], dat_bit;
+};
+
+extern struct keeloqStr keeloq;
+
+
+
+#define GREEN_ON LL_GPIO_ResetOutputPin(GPIOB, greenLed_Pin);
+#define GREEN_OFF LL_GPIO_SetOutputPin(GPIOB, greenLed_Pin);
+#define RED_ON LL_GPIO_SetOutputPin(GPIOB, redLed_Pin);
+#define RED_OFF LL_GPIO_ResetOutputPin(GPIOB, redLed_Pin);
+#define OUT_ON LL_GPIO_SetOutputPin(out1_GPIO_Port, out1_Pin|out2_Pin);
+#define OUT_OFF LL_GPIO_ResetOutputPin(out1_GPIO_Port, out1_Pin|out2_Pin);
+
+#define FANTOM_ID 0x26b41b    //0xa40550
+
+	
+
+
+
 
 /* USER CODE END Includes */
 
@@ -74,6 +68,11 @@
 #define Btn_Pin LL_GPIO_PIN_9
 #define Btn_GPIO_Port GPIOB
 #define Btn_EXTI_IRQn EXTI9_5_IRQn
+
+#define ch1 LL_GPIO_PIN_3
+#define ch2 LL_GPIO_PIN_4
+#define ch3 LL_GPIO_PIN_5
+#define ch4 LL_GPIO_PIN_6
 #ifndef NVIC_PRIORITYGROUP_0
 #define NVIC_PRIORITYGROUP_0         ((uint32_t)0x00000007) /*!< 0 bit  for pre-emption priority,
                                                                  4 bits for subpriority */

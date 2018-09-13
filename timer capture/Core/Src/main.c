@@ -1,10 +1,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-
-
-
-
 /* Private variables ---------------------------------------------------------*/
 	long timer_tic=0;
 	long BtnPeriod=0;
@@ -21,122 +17,27 @@
 	uint8_t detect_vect=0;
 	volatile uint8_t state;
 	uint8_t debug[8]={0};
+  uint32_t last_ID;
 
-volatile uint8_t level=255;
-volatile unsigned long last, len;
-uint8_t p_level;
-unsigned long p_len, p_len_prev;
-	
+ struct keeloqStr keeloq;
+ 
 
-	
-/* Private function prototypes -----------------------------------------------*/
-static void LL_Init(void);
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_TIM4_Init(void);
+ /*  volatile uint8_t level = 255;
+  volatile unsigned long last, len;
+  uint8_t p_level;
+  unsigned long p_len, p_len_prev; */
 
-/* Private function prototypes -----------------------------------------------*/
-void Delay( unsigned int Val);
+  //extern volatile uint8_t RF_bufer[66];
 
-
-	
-#define GREEN_ON LL_GPIO_ResetOutputPin(GPIOB, greenLed_Pin);
-#define GREEN_OFF LL_GPIO_SetOutputPin(GPIOB, greenLed_Pin);
-#define OUT_ON LL_GPIO_SetOutputPin(out1_GPIO_Port, out1_Pin|out2_Pin);
-#define OUT_OFF LL_GPIO_ResetOutputPin(out1_GPIO_Port, out1_Pin|out2_Pin);
-	
-#define KL_MIN_PRE_COUNT 4
-#define KL_MAX_TE 500
-#define KL_MIN_TE 300
-#define KL_MAX_BITS 66
-
-void Delay( unsigned int Val)  
-{  
-  SysTickDelay = Val;  
-  while (SysTickDelay != 0); 
+  void Delay(unsigned int Val)
+  {
+    SysTickDelay = Val;
+    while (SysTickDelay != 0)
+      ; 
 } 
 
 
-struct
-{
-  uint8_t state;
-  unsigned long TE;
-  uint8_t pre_count, data[9], dat_bit;
-} keeloq;
 
-
-void setbit(uint8_t *data, uint8_t n)
-{
-  data[n/8]|=1<<(n%8);
-}
-
-void process_keeloq()
-{
-  switch(keeloq.state)
-  {
-    case 0:
-      if(p_level) break;
-      keeloq.state=1;
-      keeloq.pre_count=0;
-      break;
-
-    case 1: //pre+hdr
-      if(p_len>=KL_MIN_TE && p_len<=KL_MAX_TE) keeloq.pre_count++;
-      else if(!p_level && p_len>=KL_MIN_TE*10 && p_len<=KL_MAX_TE*10 && keeloq.pre_count>=KL_MIN_PRE_COUNT)
-      {
-        keeloq.TE=p_len/10;
-        keeloq.state=2;
-        keeloq.dat_bit=0;
-        keeloq.data[0]=0x00;
-        keeloq.data[1]=0x00;
-        keeloq.data[2]=0x00;
-        keeloq.data[3]=0x00;
-        keeloq.data[4]=0x00;
-        keeloq.data[5]=0x00;
-        keeloq.data[6]=0x00;
-        keeloq.data[7]=0x00;
-				keeloq.data[8]=0x00;
-				
-				for(uint8_t i=0; i<66; i++)
-				{
-					RF_bufer[i]=0;
-				}
-      }
-        else
-      {
-        keeloq.state=0;
-        break;
-      }
-      break;
-
-    case 2: //dat
-      if(!p_level) break;
-
-      if(p_len<keeloq.TE/2 || p_len>keeloq.TE*3)
-      {
-        keeloq.state=0;
-        break;
-      }
-
-      if(p_len<=keeloq.TE+keeloq.TE/2) 
-			{
-				setbit(keeloq.data, keeloq.dat_bit);
-				RF_bufer[keeloq.dat_bit]=1;
-			}
-      if(++keeloq.dat_bit==KL_MAX_BITS) keeloq.state=100;
-      break;
-  }
-}
-
-void dump_hex(uint8_t *buf, uint8_t bits)
-{
-  uint8_t a;
-  
-  for(a=0; a<(bits+7)/8; a++)
-  {
-    if(buf[a]<=0x0f) {}
-  }
-}
 
 
 int main(void)
@@ -154,50 +55,55 @@ int main(void)
 
 	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
 	Delay(100);
+  LL_mDelay(1000);
 	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
 	Delay(100);
 	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
 	Delay(100);
 	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
 	Delay(100);
+ // LL_GPIO_ResetOutputPin(GPIOB, redLed_Pin|greenLed_Pin);
+
+ flash_unlock();
+
+ flash_write(ADDRESS, 0xa9a9a9a9);
+ LL_mDelay(2000);
+
+ flash_lock();
+ 
+
+  
 
 
 
   while (1)
   {
-		if(level!=255)
-  {
-    LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_8);
-    p_level=level;
-    p_len=len;
-    len=0;
-    level=255;
-    LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_8);
-    
-    process_keeloq();
-    
-    p_len_prev=p_len;
-  }
-  
+		level_check();
+
   if(keeloq.state==100)
   {
     //Serial.print("KEELOQ: ");
-    dump_hex(keeloq.data, 64);
+    //dump_hex(keeloq.data, 64);
 		button_code=keeloq.data[7]>>4;
 		read_ID|=keeloq.data[6]<<16;
 		read_ID|=keeloq.data[5]<<8;
 		read_ID|=keeloq.data[4];
     keeloq.state=0;
-		if(read_ID==0xa40550)
+		if(read_ID == FANTOM_ID)
 		{
 			//LL_GPIO_ResetOutputPin(GPIOB, greenLed_Pin);
 			GREEN_ON
-			OUT_ON
+      RED_ON
+      LL_GPIO_TogglePin(GPIOB, redLed_Pin);
+      OUT_ON
 			Delay(500);
 			GREEN_OFF
+      RED_OFF
+      LL_GPIO_TogglePin(GPIOB, redLed_Pin);
 			OUT_OFF
-
 		}
+    last_ID=read_ID;
+    read_ID=0;
     //Serial.println("");
 	}
 
@@ -379,6 +285,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
   LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*channel pin setup*/
+  GPIO_InitStruct.Pin = ch1|ch2|ch3|ch4;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;  
+  LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
 
   /**/
   LL_GPIO_AF_SetEXTISource(LL_GPIO_AF_EXTI_PORTB, LL_GPIO_AF_EXTI_LINE8);

@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"path": "timer capture"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"stm32f1xx.h": "c",
+			"main.h": "c",
+			"stm32f1xx_ll_dma.h": "c",
+			"stm32f1xx_ll_exti.h": "c",
+			"stm32f1xx_ll_utils.h": "c",
+			"stm32f1xx_ll_rcc.h": "c",
+			"stm32f1xx_ll_bus.h": "c"
+		}
+	}
+}

@@ -43,7 +43,7 @@ extern struct keeloqStr keeloq;
 #define OUT_ON LL_GPIO_SetOutputPin(out1_GPIO_Port, out1_Pin|out2_Pin);
 #define OUT_OFF LL_GPIO_ResetOutputPin(out1_GPIO_Port, out1_Pin|out2_Pin);
 
-#define FANTOM_ID 0x26b41b    //0xa40550
+#define FANTOM_ID 0xa40455	//0x26b41b    //0xa40550
 
 	
 

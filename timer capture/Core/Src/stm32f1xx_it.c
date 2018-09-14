@@ -50,7 +50,7 @@ void EXTI9_5_IRQHandler(void)
       LL_EXTI_EnableFallingTrig_0_31(LL_EXTI_LINE_8);	
       front=0;
 			level=0;
-      //durationL=LL_TIM_GetCounter(TIM4); //high level duration
+      //durationL=LL_TIM_GetCounter(TIM4); //low level duration
 			len=LL_TIM_GetCounter(TIM4);
       LL_TIM_SetCounter(TIM4, 0);
       //LL_GPIO_ResetOutputPin(GPIOB, redLed_Pin);    

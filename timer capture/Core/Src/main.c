@@ -89,7 +89,7 @@ int main(void)
 		read_ID|=keeloq.data[5]<<8;
 		read_ID|=keeloq.data[4];
     keeloq.state=0;
-		if(read_ID == FANTOM_ID)
+		if(read_ID == 0xa40455||read_ID == 0x26b41b)
 		{
 			//LL_GPIO_ResetOutputPin(GPIOB, greenLed_Pin);
 			GREEN_ON

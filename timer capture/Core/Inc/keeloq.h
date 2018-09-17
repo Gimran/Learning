@@ -5,7 +5,7 @@
     #include "stm32f1xx_ll_exti.h"
 
 #define KL_MIN_PRE_COUNT 4
-#define KL_MAX_TE 660
+#define KL_MAX_TE 660		//660
 #define KL_MIN_TE 260
 #define KL_MAX_BITS 66
 

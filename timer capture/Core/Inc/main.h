@@ -13,6 +13,7 @@
 #include "stm32f1xx_ll_tim.h"
 #include "stm32f1xx.h"
 #include "stm32f1xx_ll_gpio.h"
+#include "stdint.h"
 
 #include "flash.h"
 #include "keeloq.h"
@@ -22,6 +23,11 @@ static void LL_Init(void);
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM4_Init(void);
+
+void out_blink(uint8_t colour, uint16_t delay);
+void out_handler(void);
+
+
 
 void Delay( unsigned int Val);
 
@@ -38,10 +44,12 @@ extern struct keeloqStr keeloq;
 
 #define GREEN_ON LL_GPIO_ResetOutputPin(GPIOB, greenLed_Pin);
 #define GREEN_OFF LL_GPIO_SetOutputPin(GPIOB, greenLed_Pin);
-#define RED_ON LL_GPIO_SetOutputPin(GPIOB, redLed_Pin);
-#define RED_OFF LL_GPIO_ResetOutputPin(GPIOB, redLed_Pin);
-#define OUT_ON LL_GPIO_SetOutputPin(out1_GPIO_Port, out1_Pin|out2_Pin);
-#define OUT_OFF LL_GPIO_ResetOutputPin(out1_GPIO_Port, out1_Pin|out2_Pin);
+#define RED_ON LL_GPIO_ResetOutputPin(GPIOB, redLed_Pin);
+#define RED_OFF LL_GPIO_SetOutputPin(GPIOB, redLed_Pin);
+#define OUT1_ON LL_GPIO_SetOutputPin(out1_GPIO_Port, out1_Pin);
+#define OUT1_OFF LL_GPIO_ResetOutputPin(out1_GPIO_Port, out1_Pin);
+#define OUT2_ON LL_GPIO_SetOutputPin(out2_GPIO_Port, out2_Pin);
+#define OUT2_OFF LL_GPIO_ResetOutputPin(out2_GPIO_Port, out2_Pin);
 
 #define FANTOM_ID 0xa40455	//0x26b41b    //0xa40550
 
@@ -69,10 +77,10 @@ extern struct keeloqStr keeloq;
 #define Btn_GPIO_Port GPIOB
 #define Btn_EXTI_IRQn EXTI9_5_IRQn
 
-#define ch1 LL_GPIO_PIN_3
-#define ch2 LL_GPIO_PIN_4
-#define ch3 LL_GPIO_PIN_5
-#define ch4 LL_GPIO_PIN_6
+#define chs1 LL_GPIO_PIN_3
+#define chs2 LL_GPIO_PIN_4
+#define chs3 LL_GPIO_PIN_6
+#define chs4 LL_GPIO_PIN_5
 #ifndef NVIC_PRIORITYGROUP_0
 #define NVIC_PRIORITYGROUP_0         ((uint32_t)0x00000007) /*!< 0 bit  for pre-emption priority,
                                                                  4 bits for subpriority */

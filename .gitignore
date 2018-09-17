@@ -13,3 +13,9 @@ timer capture/MDK-ARM/f103_basic_kee/keeloq.o
 timer capture/MDK-ARM/f103_basic_kee/main.crf
 timer capture/MDK-ARM/f103_basic_kee/main.o
 timer capture/MDK-ARM/f103_basic_kee/stm32f1xx_it.crf
+timer capture/MDK-ARM/f103_basic_kee/f103_basic_kee.axf
+timer capture/MDK-ARM/f103_basic_kee/f103_basic_kee.htm
+timer capture/MDK-ARM/f103_basic_kee/f103_basic_kee.build_log.htm
+timer capture/MDK-ARM/f103_basic_kee/f103_basic_kee_f103_basic_kee.dep
+timer capture/MDK-ARM/f103_basic_kee/main.crf
+timer capture/MDK-ARM/f103_basic_kee/main.o

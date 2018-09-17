@@ -26,6 +26,8 @@
 - [расчет фильтров от TI](http://www.ti.com/design-tools/signal-chain-design/webench-filters.html)
 - [PT4303_s datasheet](http://www.princeton.com.tw/Portals/0/Product/PT4303_s.pdf)
 - [micRF211 (hiland)](http://ww1.microchip.com/downloads/en/DeviceDoc/micrf211.pdf)
+- [micrf218](https://www.mouser.com/ds/2/268/micrf218-778819.pdf)
+- [PT4318](http://www.princeton.com.tw/Portals/0/Product/PT4318.pdf)
 
 DATA FILTER
 The data filter (post-demodulator filter) is utilized to remove additional unwanted spurious signals after the OOK/ASK

@@ -44,15 +44,14 @@ void process_keeloq()
         keeloq.data[5]=0x00;
         keeloq.data[6]=0x00;
         keeloq.data[7]=0x00;
-				keeloq.data[8]=0x00;
-				
-				for(uint8_t i=0; i<66; i++)
-				{
-					RF_bufer[i]=0;
-				}
+		keeloq.data[8]=0x00;
+		  
+		for(uint8_t i=0; i<66; i++)
+		{
+			RF_bufer[i]=0;
+		}
       }
-        else
-      {
+        else{
         keeloq.state=0;
         break;
       }

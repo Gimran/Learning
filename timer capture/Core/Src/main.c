@@ -1,40 +1,151 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "stdint.h"
 
 /* Private variables ---------------------------------------------------------*/
 	long timer_tic=0;
 	long BtnPeriod=0;
-	volatile uint8_t front=0, catcher2=0, preamble_flag=0;	//0-rising, 1-falling edge
-	volatile uint32_t duration, durationL;
+	volatile uint8_t front=0 ;	//0-rising, 1-falling edge
 	volatile long SysTickDelay=0;
-	
-	volatile uint32_t preamble_count=0,HI_count, LOW_count;
 	volatile uint8_t RF_bufer[66];
-	uint16_t his_ICR1, new_ICR1, CycleCount;
-	volatile uint8_t reciver_full;
-	uint8_t volatile HCS_bit_counter;                // счетчик считанных бит данных
+	uint8_t volatile HCS_bit_counter;           // счетчик считанных бит данных
 	volatile uint32_t read_ID, button_code;
-	uint8_t detect_vect=0;
-	volatile uint8_t state;
-	uint8_t debug[8]={0};
-  uint32_t last_ID;
+	uint32_t last_ID;
+	uint8_t channel_set=0;
+	uint32_t flash_adr = 0;
+
+  uint8_t red_state, green_state, ch1_state, ch2_state;
+  uint32_t green_time, red_time, ch1_time, ch2_time;  
+
+	uint8_t colour;
+  #define GREEN 0
+  #define RED 1
+  #define CH1 2
+  #define CH2 3
 
  struct keeloqStr keeloq;
- 
 
- /*  volatile uint8_t level = 255;
-  volatile unsigned long last, len;
-  uint8_t p_level;
-  unsigned long p_len, p_len_prev; */
+ void out_handler(void)
+ {
 
-  //extern volatile uint8_t RF_bufer[66];
+   //////////////green
+   if (green_state == 1)
+   {
+     green_state = 2;
+     GREEN_ON
+   }
+   if (green_state == 2 && !green_time)
+   {
+     green_state = 3;
+     green_time = 200;
+     GREEN_OFF
+   }
+   if (green_state == 3 && !green_time)
+     green_state = 0;
+   //////////////green
 
-  void Delay(unsigned int Val)
-  {
-    SysTickDelay = Val;
-    while (SysTickDelay != 0)
-      ; 
-} 
+   //////////////red
+   if (red_state == 1)
+   {
+     red_state = 2;
+     RED_ON
+   }
+   if (red_state == 2 && !red_time)
+   {
+     red_state = 3;
+     red_time = 200;
+     RED_OFF
+   }
+   if (red_state == 3 && !red_time)
+     red_state = 0;
+   //////////////red
+
+   //////////////ch1
+   if (ch1_state == 1)
+   {
+     ch1_state = 2;
+     OUT1_ON
+   }
+   if (ch1_state == 2 && !ch1_time)
+   {
+     ch1_state = 3;
+     ch1_time = 200;
+     GREEN_OFF
+   }
+   if (ch1_state == 3 && !ch1_time)
+     ch1_state = 0;
+   //////////////ch1
+
+   //////////////ch2
+   if (ch2_state == 1)
+   {
+     ch2_state = 2;
+     OUT2_ON
+   }
+   if (ch2_state == 2 && !ch2_time)
+   {
+     ch2_state = 3;
+     ch2_time = 200;
+     GREEN_OFF
+   }
+   if (ch2_state == 3 && !ch2_time)
+     ch2_state = 0;
+   //////////////ch1
+ }
+
+
+ void out_blink(uint8_t colour, uint16_t delay)
+ {
+   switch (colour)
+   {
+   case GREEN:
+     if (green_state != 3)
+     {
+       green_time = delay;
+       green_state = 1;       
+     }
+	 break;
+
+   case RED:
+     if (red_state != 3)
+     {
+       red_time = delay;
+       red_state = 1;       
+     }
+	 break;
+
+   case CH1:
+     if (ch1_state != 3)
+     {
+       ch1_time = delay;
+       ch1_state = 1;       
+     }
+	 break;
+
+   case CH2:
+     if (ch2_state != 3)
+     {
+       ch2_time = delay;
+       ch2_state = 1;      
+     }
+	 break;
+   }
+}
+
+void channel_init(void){
+	
+	channel_set=0;
+	
+	channel_set|=((LL_GPIO_IsInputPinSet(GPIOB, chs1))^1);
+	channel_set|=((LL_GPIO_IsInputPinSet(GPIOB, chs2))^1)<<1;
+	channel_set|=((LL_GPIO_IsInputPinSet(GPIOB, chs3))^1)<<2;
+	channel_set|=((LL_GPIO_IsInputPinSet(GPIOB, chs4))^1)<<3;
+}
+
+void Delay(unsigned int Val)
+{
+SysTickDelay = Val;
+while (SysTickDelay != 0);} 
 
 
 
@@ -54,85 +165,80 @@ int main(void)
 	LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_9);
 
 	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
-	Delay(100);
-  LL_mDelay(1000);
+	LL_mDelay(100);
 	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
-	Delay(100);
+	LL_mDelay(100);
 	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
-	Delay(100);
+	LL_mDelay(100);
 	LL_GPIO_TogglePin(GPIOB, redLed_Pin|greenLed_Pin);
-	Delay(100);
- // LL_GPIO_ResetOutputPin(GPIOB, redLed_Pin|greenLed_Pin);
+	LL_mDelay(100);
+	
+  
+	  
+
 
  flash_unlock();
+ flash_erase_page(ADDRESS);
 
- flash_write(ADDRESS, 0xa9a9a9a9);
+ flash_write(ADDRESS, 0x26b41b);
+ flash_write(ADDRESS+0x4, 0xa40490);
+
  LL_mDelay(2000);
 
  flash_lock();
  
-
-  
-
-
-
   while (1)
   {
-		level_check();
+	level_check();
+  out_handler();
+  channel_init();
+flash_adr=flash_read(ADDRESS);
 
   if(keeloq.state==100)
   {
-    //Serial.print("KEELOQ: ");
-    //dump_hex(keeloq.data, 64);
+    //считывание серийника и кода кнопки из буфера
 		button_code=keeloq.data[7]>>4;
 		read_ID|=keeloq.data[6]<<16;
 		read_ID|=keeloq.data[5]<<8;
 		read_ID|=keeloq.data[4];
     keeloq.state=0;
-		if(read_ID == 0xa40455||read_ID == 0x26b41b)
+
+		if(read_ID == 0xa40455||read_ID == 0x26b41b || read_ID == 0xa40490 || read_ID == 0xa40440	||	read_ID == 0xeaf0f3)
 		{
-			//LL_GPIO_ResetOutputPin(GPIOB, greenLed_Pin);
-			GREEN_ON
-      RED_ON
-      LL_GPIO_TogglePin(GPIOB, redLed_Pin);
-      OUT_ON
-			Delay(500);
-			GREEN_OFF
-      RED_OFF
-      LL_GPIO_TogglePin(GPIOB, redLed_Pin);
-			OUT_OFF
-		}
+      if(button_code&channel_set){
+		  //LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_8);
+			out_blink(GREEN, 200);
+
+		  //LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_8);
+      }
+			/* switch(button_code){
+				case 0x1:
+				out_blink(CH1, 200);
+				break;
+				
+				case 0x2:
+				out_blink(GREEN, 200);
+				out_blink(CH1, 200);
+				break;
+				
+				case 0x4:
+				out_blink(RED, 500);
+				out_blink(CH2, 200);
+				break;				
+				
+				case 0x8:
+				out_blink(CH1, 200);
+				break;				
+			} */
+
+    	}
     last_ID=read_ID;
     read_ID=0;
-    //Serial.println("");
 	}
 
 
 	//state=LL_GPIO_IsInputPinSet(GPIOB, Btn_Pin);
-		/*
-	if(reciver_full)
-		{
-			LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_8);
-			for(uint8_t i=0;i<8; i++)
-			{
-				debug[i]=0;
-				
-			}
-			debug[0]=RF_bufer[2];
-			debug[1]=RF_bufer[3];
-			debug[2]=RF_bufer[4];
-			debug[3]=RF_bufer[5];
-			reciver_full=0;
-			for(uint8_t i=0; i<66; i++)
-			{
-				RF_bufer[i]=0;
-			}
-			Delay(400);
-			LL_EXTI_EnableIT_0_31(LL_EXTI_LINE_8);
 
-		  
-		}
-		*/
   }
 }
 
@@ -204,7 +310,7 @@ void SystemClock_Config(void)
 
   LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_1);
 
-  LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
+  LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL); 
 
    /* Wait till System clock is ready */
   while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL)
@@ -287,7 +393,7 @@ static void MX_GPIO_Init(void)
   LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*channel pin setup*/
-  GPIO_InitStruct.Pin = ch1|ch2|ch3|ch4;
+  GPIO_InitStruct.Pin = chs1|chs2|chs3|chs4;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;  
   LL_GPIO_Init(GPIOB, &GPIO_InitStruct);

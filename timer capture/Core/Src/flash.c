@@ -67,3 +67,7 @@ void flash_write(uint32_t address,uint32_t data) {
   FLASH->CR &= ~(FLASH_CR_PG); //Запрещаем программирование флеша
 }
 
+uint32_t flash_read(uint32_t address) {
+	return (*(__IO uint32_t*) address);
+}
+

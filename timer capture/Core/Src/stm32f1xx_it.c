@@ -2,20 +2,12 @@
 #include "stm32f1xx.h"
 #include "stm32f1xx_it.h"
 
-extern volatile uint32_t duration, durationL;
-extern volatile uint8_t front, catcher2, preamble_flag;
-
+extern volatile uint8_t front;
 extern volatile long SysTickDelay;
-volatile long count4;
-extern volatile uint32_t preamble_count, LOW_count, HI_count;
-extern volatile uint8_t HCS_bit_counter;                // счетчик считанных бит данных
-extern volatile uint8_t RF_bufer[66];
-extern volatile uint8_t reciver_full;
-extern volatile uint32_t read_ID;
-volatile uint32_t preDBG[12], dataDBG[66];
-
 extern volatile uint8_t level;
 extern volatile unsigned long len;
+extern uint32_t green_time, red_time, ch1_time, ch2_time;
+volatile uint32_t temp_timer, filter_count;
 
 void NMI_Handler(void){}
 void HardFault_Handler(void){while (1){}}
@@ -28,7 +20,11 @@ void PendSV_Handler(void){}
 	
 void SysTick_Handler(void)
 {
-	SysTickDelay--;
+	if(SysTickDelay)SysTickDelay--;
+	if(green_time)green_time--;
+	if(red_time)red_time--;
+	if(ch1_time)ch1_time--;
+	if(ch2_time)ch2_time--;
 }
 
 
@@ -49,14 +45,19 @@ void EXTI9_5_IRQHandler(void)
       LL_EXTI_DisableRisingTrig_0_31(LL_EXTI_LINE_8);
       LL_EXTI_EnableFallingTrig_0_31(LL_EXTI_LINE_8);	
       front=0;
-			level=0;
+	  level=0;
       //durationL=LL_TIM_GetCounter(TIM4); //low level duration
-			len=LL_TIM_GetCounter(TIM4);
+		len=LL_TIM_GetCounter(TIM4);
       LL_TIM_SetCounter(TIM4, 0);
       //LL_GPIO_ResetOutputPin(GPIOB, redLed_Pin);    
     }						
     else
-    {
+    {/*
+			temp_timer=TIM4->CNT;
+			LL_TIM_DisableCounter(TIM4);
+			WRITE_REG(TIM4->CNT, 0);			
+			LL_TIM_SetAutoReload(TIM4, 200);
+			*/
       //обработка заднего фронта
       //Enable Rising trigger line 8
       LL_EXTI_EnableRisingTrig_0_31(LL_EXTI_LINE_8);
@@ -64,7 +65,7 @@ void EXTI9_5_IRQHandler(void)
 			front=1;
 			level=1;
 			len=TIM4->CNT;	//LL_TIM_GetCounter(TIM4);
-      duration=LL_TIM_GetCounter(TIM4);		 //high level duration
+      //duration=LL_TIM_GetCounter(TIM4);		 //high level duration
 			LL_TIM_SetCounter(TIM4, 0);      
       //LL_GPIO_SetOutputPin(GPIOB, redLed_Pin);      
     }		
@@ -76,24 +77,7 @@ void EXTI9_5_IRQHandler(void)
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_9);
 		
 		/*
-		if(catcher2==0)
-		{
-			LL_TIM_SetCounter(TIM4, 0);
-			LL_GPIO_ResetOutputPin(GPIOB, greenLed_Pin);
-
-			catcher2=1;
-		}
-		
-		else
-		{
-			duration=LL_TIM_GetCounter(TIM4);
-			//LL_TIM_DisableCounter(TIM4);
-			
-			LL_GPIO_SetOutputPin(GPIOB, greenLed_Pin);
-			
-			//LL_GPIO_TogglePin(GPIOB, greenLed_Pin);
-			catcher2=0;
-		}
+		button interrupt
 		*/
   }
 }
@@ -102,5 +86,6 @@ void EXTI9_5_IRQHandler(void)
 
 void TIM4_IRQHandler(void)
 {
-	count4++;
+	//count4++;
+
 }
